@@ -1,0 +1,171 @@
+.billing-layout {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 24px;
+  align-items: start;
+}
+
+.med-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: calc(100vh - 180px);
+  overflow-y: auto;
+}
+
+.med-pick-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: var(--color-white);
+  border: 1px solid var(--color-border-light);
+  border-radius: var(--radius-sm);
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.med-pick-card:hover { border-color: var(--color-primary); background: var(--color-mint); }
+.med-pick-card.out-of-stock { opacity: 0.5; pointer-events: none; }
+.med-pick-name { font-weight: 500; font-size: 14px; }
+.med-pick-meta { font-size: 12px; color: var(--color-text-muted); }
+.med-pick-stock { font-size: 12px; color: var(--color-primary-dark); font-weight: 600; }
+
+.billing-right {
+  background: var(--color-white);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  border: 1px solid var(--color-border-light);
+  padding: 20px;
+  position: sticky;
+  top: 32px;
+}
+
+.billing-customer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.billing-customer input {
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  font-size: 13px;
+  outline: none;
+}
+
+.billing-customer input:focus { border-color: var(--color-primary); }
+
+.cart-section h3 { font-size: 15px; margin-bottom: 12px; color: var(--color-text); }
+.cart-empty { color: var(--color-text-muted); font-size: 13px; }
+
+.cart-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.cart-item-info { flex: 1; }
+.cart-item-name { font-size: 13px; font-weight: 500; }
+.cart-item-price { font-size: 11px; color: var(--color-text-muted); }
+
+.cart-item-qty {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cart-item-qty button {
+  width: 28px; height: 28px;
+  border: none;
+  background: var(--color-bg);
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+}
+
+.cart-item-qty button:hover { background: var(--color-mint); }
+.cart-item-qty span { width: 32px; text-align: center; font-size: 13px; font-weight: 600; }
+.cart-remove { border: none; background: none; color: var(--color-red); font-size: 16px; padding: 0 6px; }
+
+.cart-item-total { font-weight: 600; font-size: 14px; min-width: 70px; text-align: right; }
+
+.cart-footer {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid var(--color-border);
+}
+
+.cart-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  margin-bottom: 12px;
+}
+
+.cart-grand-total {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.btn-bill {
+  width: 100%;
+  padding: 14px;
+  font-size: 16px;
+  background: var(--color-coral);
+}
+
+.btn-bill:hover { background: var(--color-coral-hover); }
+
+/* Invoice receipt */
+.invoice-success {
+  text-align: center;
+}
+
+.invoice-header {
+  font-family: var(--font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+  padding-bottom: 16px;
+  border-bottom: 2px solid var(--color-primary);
+  margin-bottom: 16px;
+}
+
+.invoice-items {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 16px;
+}
+
+.invoice-line {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+}
+
+.invoice-totals {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+  padding-top: 12px;
+}
+
+.invoice-total {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+}

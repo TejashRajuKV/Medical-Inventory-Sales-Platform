@@ -1,0 +1,63 @@
+:root {
+  /* Color palette — from project plan §6 */
+  --color-primary: #0F6E6A;
+  --color-primary-light: #14807B;
+  --color-primary-dark: #0B5552;
+  --color-mint: #E8F5F1;
+  --color-coral: #FF7A59;
+  --color-coral-hover: #E86840;
+  --color-amber: #F4A93B;
+  --color-red: #E5484D;
+  --color-text: #2B2B2B;
+  --color-text-muted: #6B7280;
+  --color-bg: #FBFAF7;
+  --color-white: #FFFFFF;
+  --color-border: #E5E7EB;
+  --color-border-light: #F3F4F6;
+
+  /* Batch freshness colors */
+  --fresh-green: #22C55E;
+  --fresh-amber: #F59E0B;
+  --fresh-red: #EF4444;
+
+  /* Typography */
+  --font-heading: 'Poppins', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Spacing */
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-lg: 16px;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow: 0 1px 3px rgba(0,0,0,0.1), 0 1px 2px rgba(0,0,0,0.06);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.07), 0 2px 4px rgba(0,0,0,0.06);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.1), 0 4px 6px rgba(0,0,0,0.05);
+
+  /* Layout */
+  --sidebar-width: 240px;
+  --header-height: 60px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--color-text);
+  background: var(--color-bg);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+a { color: var(--color-primary); text-decoration: none; }
+button { cursor: pointer; font-family: var(--font-body); }
+input, select, textarea { font-family: var(--font-body); font-size: 14px; }

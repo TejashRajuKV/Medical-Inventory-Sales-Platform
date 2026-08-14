@@ -1,0 +1,12 @@
+.inv-no { font-weight: 600; font-family: monospace; font-size: 13px; }
+.date-cell { font-size: 13px; color: var(--color-text-muted); }
+
+.sale-detail-cell { padding: 0 !important; background: var(--color-bg); }
+.sale-detail { padding: 16px; display: flex; justify-content: space-between; gap: 24px; }
+.sale-detail-items { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.sale-detail-line { display: flex; justify-content: space-between; font-size: 13px; }
+.sale-detail-name { font-weight: 500; margin-right: 10px; }
+.sale-detail-batch { font-size: 11px; color: var(--color-text-muted); margin-left: 8px; }
+.sale-detail-gst { font-size: 11px; color: var(--color-text-muted); margin-left: 6px; }
+.sale-detail-totals { text-align: right; font-size: 13px; color: var(--color-text-muted); display: flex; flex-direction: column; gap: 4px; }
+.inv-total-line { font-size: 16px; font-weight: 700; color: var(--color-text); border-top: 1px solid var(--color-border); padding-top: 8px; margin-top: 8px; }
