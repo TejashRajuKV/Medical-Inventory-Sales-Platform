@@ -33,5 +33,10 @@ app.use('/api/reorders', reorderRoutes);
 process.on('uncaughtException', (err) => { console.error('UNCAUGHT:', err); process.exit(1); });
 process.on('unhandledRejection', (err) => { console.error('UNHANDLED:', err); });
 
+import { startAlertService } from './services/alertService.js';
+
 const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+  startAlertService();
+});

@@ -172,37 +172,4 @@ router.post('/:id/reject', (req, res) => {
   res.json({ success: true });
 });
 
-// Analytics: daily sales
-router.get('/analytics/daily', (req, res) => {
-  const days = parseInt(req.query.days) || 7;
-  const data = db.prepare(`
-    SELECT DATE(s.created_at) as date,
-      COUNT(DISTINCT s.id) as invoices,
-      SUM(s.total_amount) as revenue,
-      SUM(si.quantity) as units_sold
-    FROM sales s
-    JOIN sale_items si ON si.sale_id = s.id
-    WHERE s.created_at >= DATE('now', '-' || ? || ' days')
-    GROUP BY DATE(s.created_at)
-    ORDER BY date ASC
-  `).all(days);
-  res.json(data);
-});
-
-// Analytics: weekly sales
-router.get('/analytics/weekly', (req, res) => {
-  const data = db.prepare(`
-    SELECT strftime('%Y-W%W', s.created_at) as week,
-      COUNT(DISTINCT s.id) as invoices,
-      SUM(s.total_amount) as revenue,
-      SUM(si.quantity) as units_sold
-    FROM sales s
-    JOIN sale_items si ON si.sale_id = s.id
-    WHERE s.created_at >= DATE('now', '-56 days')
-    GROUP BY week
-    ORDER BY week ASC
-  `).all();
-  res.json(data);
-});
-
 export default router;

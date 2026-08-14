@@ -41,6 +41,8 @@ export const sales = {
   list: () => request('/sales'),
   get: (id) => request(`/sales/${id}`),
   deadStock: () => request('/sales/analytics/dead-stock'),
+  dailyAnalytics: (days) => request(`/sales/analytics/daily?days=${days || 7}`),
+  weeklyAnalytics: () => request('/sales/analytics/weekly'),
 };
 
 export const customers = {
@@ -78,6 +80,4 @@ export const reorders = {
   create: (data) => request('/reorders', { method: 'POST', body: JSON.stringify(data) }),
   approve: (id) => request(`/reorders/${id}/approve`, { method: 'POST' }),
   reject: (id) => request(`/reorders/${id}/reject`, { method: 'POST' }),
-  dailyAnalytics: (days) => request(`/reorders/analytics/daily?days=${days || 7}`),
-  weeklyAnalytics: () => request('/reorders/analytics/weekly'),
 };
