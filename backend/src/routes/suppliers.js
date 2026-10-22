@@ -32,7 +32,7 @@ router.delete('/:id', ownerOnly, (req, res) => {
   const supplierId = Number(req.params.id);
   if (!db.prepare('SELECT id FROM suppliers WHERE id = ?').get(supplierId)) return res.status(404).json({ error: 'Supplier not found' });
   const used = db.prepare('SELECT (SELECT COUNT(*) FROM medicines WHERE supplier_id = ?) + (SELECT COUNT(*) FROM purchase_orders WHERE supplier_id = ?) AS total').get(supplierId, supplierId).total;
-  if (used > 0) return res.status(409).json({ error: 'Supplier is linked to medicines or purchase orders; deactivate it instead of deleting history' });
+  if (used > 0) return res.status(409).json({ error: 'Supplier is linked to medicines or purchase orders and cannot be deleted without breaking history' });
   db.prepare('DELETE FROM suppliers WHERE id = ?').run(supplierId);
   auditLog(req.user.id, 'supplier.deleted', 'supplier', supplierId);
   res.json({ success: true });
