@@ -10,6 +10,7 @@ import Suppliers from './pages/Suppliers';
 import ReorderAI from './pages/ReorderAI';
 import Alerts from './pages/Alerts';
 import Landing from './pages/Landing';
+import Reports from './pages/Reports';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -31,6 +32,7 @@ export default function App() {
           <Route path="/reorders" element={<PrivateRoute><ReorderAI /></PrivateRoute>} />
           <Route path="/sales-history" element={<PrivateRoute><SalesHistory /></PrivateRoute>} />
           <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
+          <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
