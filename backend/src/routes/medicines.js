@@ -6,7 +6,7 @@ import { auditLog } from '../utils/audit.js';
 const router = express.Router();
 router.use(auth);
 const validMoney = (value) => Number.isFinite(Number(value)) && Number(value) >= 0;
-const validMedicineInput = (body) => typeof body.name === 'string' && body.name.trim().length > 0 && body.name.trim().length <= 200 && validMoney(body.price) && (body.cost_price == null || body.cost_price === '' || validMoney(body.cost_price)) && (body.gst_rate == null || validMoney(body.gst_rate) && Number(body.gst_rate) <= 100) && (body.low_stock_threshold == null || Number.isSafeInteger(Number(body.low_stock_threshold)) && Number(body.low_stock_threshold) >= 0);
+const validMedicineInput = (body) => body.price != null && body.price !== '' && typeof body.name === 'string' && body.name.trim().length > 0 && body.name.trim().length <= 200 && validMoney(body.price) && (body.cost_price == null || body.cost_price === '' || validMoney(body.cost_price)) && (body.gst_rate == null || validMoney(body.gst_rate) && Number(body.gst_rate) <= 100) && (body.low_stock_threshold == null || Number.isSafeInteger(Number(body.low_stock_threshold)) && Number(body.low_stock_threshold) >= 0);
 
 // List medicines with computed stock from batches
 router.get('/', (req, res) => {
@@ -54,7 +54,7 @@ router.post('/', (req, res) => {
   const result = db.prepare(`
     INSERT INTO medicines (name, brand, salt_composition, category, is_prescription_required, cost_price, price, gst_rate, low_stock_threshold, barcode, supplier_id)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `).run(name, brand || null, salt_composition || null, category || null, is_prescription_required ? 1 : 0, cost_price || null, price, gst_rate || 0, low_stock_threshold || 10, barcode || null, supplier_id || null);
+  `).run(name.trim(), brand || null, salt_composition || null, category || null, is_prescription_required ? 1 : 0, cost_price === '' || cost_price == null ? null : Number(cost_price), Number(price), gst_rate == null || gst_rate === '' ? 0 : Number(gst_rate), low_stock_threshold == null || low_stock_threshold === '' ? 10 : Number(low_stock_threshold), barcode || null, supplier_id || null);
 
   auditLog(req.user.id, 'medicine.created', 'medicine', result.lastInsertRowid, { name: name.trim() });
   res.status(201).json({ id: result.lastInsertRowid, name: name.trim(), price: Number(price) });
