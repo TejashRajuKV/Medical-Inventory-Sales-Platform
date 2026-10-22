@@ -13,10 +13,12 @@ db.exec(schema);
 // Seed owner account
 const ownerExists = db.prepare('SELECT id FROM users WHERE email = ?').get('owner@pharma.com');
 if (!ownerExists) {
-  const hash = bcrypt.hashSync('owner123', 10);
+  const initialPassword = process.env.OWNER_INITIAL_PASSWORD;
+  if (typeof initialPassword !== 'string' || initialPassword.length < 12) throw new Error('Set OWNER_INITIAL_PASSWORD to a unique password of at least 12 characters before setup.');
+  const hash = bcrypt.hashSync(initialPassword, 12);
   db.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)')
     .run('Pharmacy Owner', 'owner@pharma.com', hash, 'owner');
-  console.log('✅ Owner account seeded: owner@pharma.com / owner123');
+  console.log('Owner account created: owner@pharma.com (password supplied via environment).');
 }
 
 // Seed sample suppliers
