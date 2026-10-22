@@ -72,6 +72,7 @@ export const purchaseOrders = {
   list: (status) => request(`/purchase-orders${status ? '?status=' + status : ''}`),
   create: (data) => request('/purchase-orders', { method: 'POST', body: JSON.stringify(data) }),
   receive: (id, data) => request(`/purchase-orders/${id}/receive`, { method: 'POST', body: JSON.stringify(data) }),
+  cancel: (id) => request(`/purchase-orders/${id}/cancel`, { method: 'POST' }),
 };
 
 export const reorders = {
