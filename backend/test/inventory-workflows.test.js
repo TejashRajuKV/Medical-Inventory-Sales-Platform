@@ -134,6 +134,10 @@ test('staff cannot access owner-only audit history or approve refunds', async ()
   assert.equal(audit.status, 403);
   const review = await request('/api/returns/1/review', staffToken, json('POST', { decision: 'approve', restock: false }));
   assert.equal(review.status, 403);
+  const adjust = await request('/api/stock-adjustments', staffToken, json('POST', { batch_id: batchId, qty_change: 1, reason: 'unauthorized adjustment' }));
+  assert.equal(adjust.status, 403);
+  const order = await request('/api/purchase-orders', staffToken, json('POST', { supplier_id: 1 }));
+  assert.equal(order.status, 403);
 });
 
 test('report endpoints return summary JSON and downloadable CSV', async () => {
