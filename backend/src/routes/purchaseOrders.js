@@ -25,7 +25,7 @@ router.get('/', (req, res) => {
 });
 
 // Place a purchase order
-router.post('/', (req, res) => {
+router.post('/', requireRole('owner', 'manager'), (req, res) => {
   const { supplier_id } = req.body;
   if (!Number.isSafeInteger(Number(supplier_id)) || Number(supplier_id) <= 0) return res.status(400).json({ error: 'Valid supplier_id required' });
   if (!db.prepare('SELECT id FROM suppliers WHERE id = ?').get(Number(supplier_id))) return res.status(404).json({ error: 'Supplier not found' });
@@ -47,7 +47,7 @@ router.post('/:id/cancel', requireRole('owner', 'manager'), (req, res) => {
 });
 
 // Receive a purchase order — create batches from it
-router.post('/:id/receive', (req, res) => {
+router.post('/:id/receive', requireRole('owner', 'manager'), (req, res) => {
   const { batches: batchItems } = req.body; // [{ medicine_id, batch_no, expiry_date, qty, cost_price }]
   if (!Array.isArray(batchItems) || batchItems.length === 0 || batchItems.length > 200) return res.status(400).json({ error: 'Provide between 1 and 200 batch items' });
   if (batchItems.some((b) => !b || !Number.isSafeInteger(Number(b.medicine_id)) || Number(b.medicine_id) <= 0 || typeof b.batch_no !== 'string' || !b.batch_no.trim() || b.batch_no.trim().length > 100 || typeof b.expiry_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(b.expiry_date) || Number.isSafeInteger(b.qty) === false || b.qty <= 0 || !Number.isFinite(Number(b.cost_price)) || Number(b.cost_price) < 0)) return res.status(400).json({ error: 'Each batch needs a valid medicine, batch number, YYYY-MM-DD expiry, positive integer quantity and non-negative cost price' });
