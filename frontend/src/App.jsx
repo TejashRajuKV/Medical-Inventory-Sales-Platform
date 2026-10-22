@@ -12,6 +12,7 @@ import Alerts from './pages/Alerts';
 import Landing from './pages/Landing';
 import Reports from './pages/Reports';
 import PurchaseOrders from './pages/PurchaseOrders';
+import Returns from './pages/Returns';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/alerts" element={<PrivateRoute><Alerts /></PrivateRoute>} />
           <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
           <Route path="/purchase-orders" element={<PrivateRoute><PurchaseOrders /></PrivateRoute>} />
+          <Route path="/returns" element={<PrivateRoute><Returns /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
