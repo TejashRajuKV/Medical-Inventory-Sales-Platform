@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth } from '../middleware/auth.js';
+import { auth, requireRole } from '../middleware/auth.js';
 import db from '../db/connection.js';
 import { auditLog } from '../utils/audit.js';
 
@@ -34,6 +34,18 @@ router.post('/', (req, res) => {
   res.status(201).json({ id: r.lastInsertRowid });
 });
 
+router.post('/:id/cancel', requireRole('owner', 'manager'), (req, res) => {
+  if (!Number.isSafeInteger(Number(req.params.id)) || Number(req.params.id) <= 0) return res.status(400).json({ error: 'Invalid purchase-order ID' });
+  const po = db.prepare('SELECT * FROM purchase_orders WHERE id = ?').get(Number(req.params.id));
+  if (!po) return res.status(404).json({ error: 'Purchase order not found' });
+  if (po.status !== 'ordered') return res.status(409).json({ error: 'Only ordered purchase orders can be cancelled' });
+  const received = db.prepare('SELECT COUNT(*) AS count FROM batches WHERE purchase_order_id = ?').get(po.id).count;
+  if (received) return res.status(409).json({ error: 'Cannot cancel an order with received batches' });
+  db.prepare("UPDATE purchase_orders SET status = 'cancelled' WHERE id = ?").run(po.id);
+  auditLog(req.user.id, 'purchase_order.cancelled', 'purchase_order', po.id);
+  res.json({ success: true, status: 'cancelled' });
+});
+
 // Receive a purchase order — create batches from it
 router.post('/:id/receive', (req, res) => {
   const { batches: batchItems } = req.body; // [{ medicine_id, batch_no, expiry_date, qty, cost_price }]
@@ -50,7 +62,11 @@ router.post('/:id/receive', (req, res) => {
         'INSERT INTO batches (medicine_id, purchase_order_id, batch_no, expiry_date, qty, cost_price) VALUES (?, ?, ?, ?, ?, ?)'
       );
 
+      const seenBatchKeys = new Set();
       for (const b of batchItems) {
+        const batchKey = Number(b.medicine_id) + ':' + b.batch_no.trim().toLowerCase();
+        if (seenBatchKeys.has(batchKey) || db.prepare('SELECT id FROM batches WHERE medicine_id = ? AND lower(batch_no) = lower(?)').get(Number(b.medicine_id), b.batch_no.trim())) throw new Error('Duplicate batch number for this medicine');
+        seenBatchKeys.add(batchKey);
         const medicine = db.prepare('SELECT id, supplier_id FROM medicines WHERE id = ?').get(Number(b.medicine_id));
         if (!medicine) throw new Error('Medicine not found: ' + b.medicine_id);
         if (medicine.supplier_id && Number(medicine.supplier_id) !== Number(po.supplier_id)) throw new Error('Medicine supplier does not match purchase-order supplier');
