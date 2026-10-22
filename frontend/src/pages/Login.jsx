@@ -1,9 +1,14 @@
 import { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import './Login.css';
 
 export default function Login() {
-  const { login } = useAuth();
+  const { login, user } = useAuth();
+  
+  if (user) {
+    return <Navigate to="/dashboard" replace />;
+  }
   const [email, setEmail] = useState('owner@pharma.com');
   const [password, setPassword] = useState('owner123');
   const [error, setError] = useState('');

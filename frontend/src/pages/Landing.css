@@ -1,0 +1,285 @@
+.landing-page {
+  min-height: 100vh;
+  background-color: var(--color-base);
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+}
+
+.landing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 4rem;
+  background-color: transparent;
+}
+
+.landing-logo {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  letter-spacing: -0.5px;
+}
+
+.landing-nav {
+  display: flex;
+  gap: 1rem;
+}
+
+.landing-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 2rem 4rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.landing-content {
+  flex: 1;
+  max-width: 600px;
+  z-index: 2;
+}
+
+.landing-title {
+  font-size: 3.5rem;
+  line-height: 1.1;
+  margin-bottom: 1.5rem;
+  color: var(--color-primary);
+  font-family: 'Poppins', sans-serif;
+}
+
+.text-accent {
+  color: var(--color-accent);
+}
+
+.landing-subtitle {
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-text);
+  opacity: 0.8;
+  margin-bottom: 2.5rem;
+}
+
+.landing-actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 4rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.landing-stats {
+  display: flex;
+  gap: 3rem;
+  border-top: 1px solid rgba(15, 110, 106, 0.1);
+  padding-top: 2rem;
+}
+
+.stat-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stat-item strong {
+  font-size: 2rem;
+  color: var(--color-primary);
+  font-family: 'Poppins', sans-serif;
+}
+
+.stat-item span {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.landing-3d {
+  flex: 1.2;
+  height: 600px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.three-scene-container {
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.three-scene-container:active {
+  cursor: grabbing;
+}
+
+/* --- Features Section --- */
+.features-section {
+  padding: 6rem 4rem;
+  background-color: #ffffff;
+  text-align: center;
+}
+
+.section-title {
+  font-size: 2.5rem;
+  color: var(--color-primary);
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 4rem;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: var(--color-base);
+  padding: 2.5rem;
+  border-radius: 16px;
+  text-align: left;
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(15, 110, 106, 0.05);
+}
+
+.feature-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.feature-card h3 {
+  font-size: 1.25rem;
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.feature-card p {
+  color: var(--color-text);
+  opacity: 0.8;
+  line-height: 1.6;
+}
+
+/* --- CTA Section --- */
+.cta-section {
+  padding: 6rem 4rem;
+  background-color: var(--color-primary);
+  color: white;
+  text-align: center;
+}
+
+.cta-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.cta-section p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+  margin-bottom: 2rem;
+}
+
+.mt-4 {
+  margin-top: 2rem;
+}
+
+.cta-section .btn-primary {
+  background-color: var(--color-accent);
+  color: white;
+}
+
+.cta-section .btn-primary:hover {
+  background-color: #e66a4a;
+}
+
+/* --- Footer --- */
+.landing-footer {
+  padding: 4rem 4rem 2rem;
+  background-color: #ffffff;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 0 auto;
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  padding-bottom: 2rem;
+  margin-bottom: 2rem;
+}
+
+.footer-brand {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.footer-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.footer-links a {
+  color: var(--color-text);
+  text-decoration: none;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.footer-links a:hover {
+  opacity: 1;
+}
+
+.footer-copyright {
+  text-align: center;
+  opacity: 0.5;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 900px) {
+  .landing-main {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem;
+  }
+
+  .landing-header {
+    padding: 1.5rem 2rem;
+  }
+
+  .landing-content {
+    margin-bottom: 3rem;
+  }
+
+  .landing-actions {
+    justify-content: center;
+  }
+
+  .landing-stats {
+    justify-content: center;
+  }
+
+  .features-section, .cta-section, .landing-footer {
+    padding: 3rem 2rem;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
