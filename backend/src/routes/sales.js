@@ -203,7 +203,7 @@ router.get('/', (req, res) => {
 });
 
 // Get single sale with items
-router.get('/:id', (req, res) => {
+router.get('/:id(\\d+)', (req, res) => {
   if (!isPositiveInteger(req.params.id)) return res.status(400).json({ error: 'Invalid sale ID' });
 
   const sale = db.prepare(`
