@@ -5,7 +5,8 @@ import db from '../db/connection.js';
 const router = express.Router();
 router.use(auth);
 const csvCell = (value) => {
-  const text = value == null ? '' : String(value);
+  let text = value == null ? '' : String(value);
+  if (/^[=+@-]/.test(text)) text = "'" + text;
   return /[",\r\n]/.test(text) ? '"' + text.replace(/"/g, '""') + '"' : text;
 };
 const sendCsv = (res, filename, headers, rows) => {
