@@ -14,6 +14,10 @@ import alertRoutes from './routes/alerts.js';
 import supplierRoutes from './routes/suppliers.js';
 import poRoutes from './routes/purchaseOrders.js';
 import reorderRoutes from './routes/reorders.js';
+import returnsRoutes from './routes/returns.js';
+import reportsRoutes from './routes/reports.js';
+import auditRoutes from './routes/audit.js';
+import './db/migrate.js';
 
 const app = express();
 app.use(cors());
@@ -29,6 +33,9 @@ app.use('/api/alerts', alertRoutes);
 app.use('/api/suppliers', supplierRoutes);
 app.use('/api/purchase-orders', poRoutes);
 app.use('/api/reorders', reorderRoutes);
+app.use('/api/returns', returnsRoutes);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/audit-logs', auditRoutes);
 
 process.on('uncaughtException', (err) => { console.error('UNCAUGHT:', err); process.exit(1); });
 process.on('unhandledRejection', (err) => { console.error('UNHANDLED:', err); });
