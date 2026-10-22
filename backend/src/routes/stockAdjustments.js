@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth } from '../middleware/auth.js';
+import { auth, requireRole } from '../middleware/auth.js';
 import db from '../db/connection.js';
 import { auditLog } from '../utils/audit.js';
 
@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
   res.json(adjustments);
 });
 
-router.post('/', (req, res) => {
+router.post('/', requireRole('owner', 'manager'), (req, res) => {
   const { batch_id, qty_change, reason } = req.body;
   if (!Number.isSafeInteger(Number(batch_id)) || Number(batch_id) <= 0 || !Number.isSafeInteger(qty_change) || qty_change === 0 || typeof reason !== 'string' || !reason.trim() || reason.trim().length > 500) {
     return res.status(400).json({ error: 'batch_id, qty_change, and reason required' });
