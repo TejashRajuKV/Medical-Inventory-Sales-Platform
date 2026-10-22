@@ -8,6 +8,7 @@ const navItems = [
   { to: '/medicines', label: 'Medicines', icon: '●' },
   { to: '/suppliers', label: 'Suppliers', icon: '◆' },
   { to: '/purchase-orders', label: 'Purchase Orders', icon: '▤' },
+  { to: '/returns', label: 'Returns & Refunds', icon: '↩' },
   { to: '/reorders', label: 'Reorder Suggestions', icon: '↗' },
   { to: '/sales-history', label: 'Sales History', icon: '≡' },
   { to: '/alerts', label: 'Alerts', icon: '!' },
