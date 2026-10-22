@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import './Sidebar.css';
 
 const navItems = [
-  { to: '/', label: 'Dashboard', icon: '⊞' },
+  { to: '/dashboard', label: 'Dashboard', icon: '⊞' },
   { to: '/billing', label: 'Billing', icon: '₹' },
   { to: '/medicines', label: 'Medicines', icon: '●' },
   { to: '/suppliers', label: 'Suppliers', icon: '◆' },
@@ -26,7 +26,7 @@ export default function Sidebar() {
       </div>
       <nav className="sidebar-nav">
         {navItems.filter((item) => !item.ownerOnly || user?.role === 'owner').map((item) => (
-          <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
+          <NavLink key={item.to} to={item.to} end={item.to === '/dashboard'} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
             <span className="sidebar-icon">{item.icon}</span>{item.label}
           </NavLink>
         ))}
