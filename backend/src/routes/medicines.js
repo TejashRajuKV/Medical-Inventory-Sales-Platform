@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth } from '../middleware/auth.js';
+import { auth, requireRole } from '../middleware/auth.js';
 import db from '../db/connection.js';
 import { auditLog } from '../utils/audit.js';
 
@@ -46,7 +46,7 @@ router.get('/:id(\\d+)', (req, res) => {
 });
 
 // Create medicine
-router.post('/', (req, res) => {
+router.post('/', requireRole('owner', 'manager'), (req, res) => {
   const { name, brand, salt_composition, category, is_prescription_required, cost_price, price, gst_rate, low_stock_threshold, barcode, supplier_id } = req.body;
   if (!validMedicineInput(req.body)) return res.status(400).json({ error: 'Provide a medicine name, non-negative price/cost, GST between 0 and 100, and a non-negative whole-number stock threshold' });
   if (supplier_id != null && supplier_id !== '' && (!Number.isSafeInteger(Number(supplier_id)) || Number(supplier_id) <= 0 || !db.prepare('SELECT id FROM suppliers WHERE id = ?').get(Number(supplier_id)))) return res.status(400).json({ error: 'Supplier does not exist' });
@@ -61,7 +61,7 @@ router.post('/', (req, res) => {
 });
 
 // Update medicine
-router.put('/:id', (req, res) => {
+router.put('/:id', requireRole('owner', 'manager'), (req, res) => {
   const { name, brand, salt_composition, category, is_prescription_required, cost_price, price, gst_rate, low_stock_threshold, barcode, supplier_id } = req.body;
   if (!validMedicineInput(req.body)) return res.status(400).json({ error: 'Invalid medicine fields or price values' });
   if (supplier_id != null && supplier_id !== '' && (!Number.isSafeInteger(Number(supplier_id)) || Number(supplier_id) <= 0 || !db.prepare('SELECT id FROM suppliers WHERE id = ?').get(Number(supplier_id)))) return res.status(400).json({ error: 'Supplier does not exist' });
@@ -79,7 +79,7 @@ router.put('/:id', (req, res) => {
 });
 
 // Delete medicine (only if no sales history)
-router.delete('/:id', (req, res) => {
+router.delete('/:id', requireRole('owner', 'manager'), (req, res) => {
   const medicineId = Number(req.params.id);
   if (!Number.isSafeInteger(medicineId) || medicineId <= 0) return res.status(400).json({ error: 'Invalid medicine ID' });
   const exists = db.prepare('SELECT id FROM medicines WHERE id = ?').get(medicineId);
