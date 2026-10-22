@@ -13,6 +13,7 @@ import Landing from './pages/Landing';
 import Reports from './pages/Reports';
 import PurchaseOrders from './pages/PurchaseOrders';
 import Returns from './pages/Returns';
+import AuditLogs from './pages/AuditLogs';
 
 function PrivateRoute({ children }) {
   const { user, loading } = useAuth();
@@ -37,6 +38,7 @@ export default function App() {
           <Route path="/reports" element={<PrivateRoute><Reports /></PrivateRoute>} />
           <Route path="/purchase-orders" element={<PrivateRoute><PurchaseOrders /></PrivateRoute>} />
           <Route path="/returns" element={<PrivateRoute><Returns /></PrivateRoute>} />
+          <Route path="/audit-logs" element={<PrivateRoute><AuditLogs /></PrivateRoute>} />
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </BrowserRouter>
