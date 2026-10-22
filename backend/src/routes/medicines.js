@@ -10,8 +10,9 @@ router.get('/', (req, res) => {
   const search = req.query.search;
   let query = `
     SELECT m.*,
-      COALESCE(SUM(b.qty), 0) AS total_stock,
-      MIN(b.expiry_date) AS nearest_expiry
+      COALESCE(SUM(CASE WHEN date(b.expiry_date) >= date('now') THEN b.qty ELSE 0 END), 0) AS total_stock,
+      COALESCE(SUM(CASE WHEN date(b.expiry_date) < date('now') THEN b.qty ELSE 0 END), 0) AS expired_stock,
+      MIN(CASE WHEN date(b.expiry_date) >= date('now') AND b.qty > 0 THEN b.expiry_date END) AS nearest_expiry
     FROM medicines m
     LEFT JOIN batches b ON b.medicine_id = m.id
   `;
@@ -26,17 +27,19 @@ router.get('/', (req, res) => {
 });
 
 // Get single medicine with its batches
-router.get('/:id', (req, res) => {
-  const medicine = db.prepare('SELECT * FROM medicines WHERE id = ?').get(req.params.id);
+router.get('/:id(\\d+)', (req, res) => {
+  const medicineId = Number(req.params.id);
+  const medicine = db.prepare('SELECT * FROM medicines WHERE id = ?').get(medicineId);
   if (!medicine) return res.status(404).json({ error: 'Medicine not found' });
 
   const batches = db.prepare(
-    'SELECT * FROM batches WHERE medicine_id = ? ORDER BY expiry_date ASC'
-  ).all(req.params.id);
+    "SELECT *, CASE WHEN date(expiry_date) < date('now') THEN 1 ELSE 0 END AS is_expired FROM batches WHERE medicine_id = ? ORDER BY date(expiry_date) ASC, id ASC"
+  ).all(medicineId);
 
-  const totalStock = batches.reduce((sum, b) => sum + b.qty, 0);
+  const totalStock = batches.reduce((sum, batch) => sum + (batch.is_expired ? 0 : batch.qty), 0);
+  const expiredStock = batches.reduce((sum, batch) => sum + (batch.is_expired ? batch.qty : 0), 0);
 
-  res.json({ ...medicine, batches, totalStock });
+  res.json({ ...medicine, batches, totalStock, expiredStock });
 });
 
 // Create medicine
@@ -80,10 +83,13 @@ router.delete('/:id', (req, res) => {
 });
 
 // Get batches for a medicine
-router.get('/:id/batches', (req, res) => {
+router.get('/:id(\\d+)/batches', (req, res) => {
+  const medicine = db.prepare('SELECT id FROM medicines WHERE id = ?').get(Number(req.params.id));
+  if (!medicine) return res.status(404).json({ error: 'Medicine not found' });
+
   const batches = db.prepare(
-    'SELECT * FROM batches WHERE medicine_id = ? ORDER BY expiry_date ASC'
-  ).all(req.params.id);
+    "SELECT *, CASE WHEN date(expiry_date) < date('now') THEN 1 ELSE 0 END AS is_expired FROM batches WHERE medicine_id = ? ORDER BY date(expiry_date) ASC, id ASC"
+  ).all(Number(req.params.id));
   res.json(batches);
 });
 
