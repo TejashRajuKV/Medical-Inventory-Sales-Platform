@@ -72,10 +72,12 @@ test('medicine creation rejects negative prices and invalid GST', async () => {
 
 test('billing cannot sell expired units, even when expired quantity is larger', async () => {
   const response = await request('/api/sales', ownerToken, json('POST', { items: [{ medicine_id: medicineId, quantity: 11 }] }));
-  assert.equal(response.status, 201);
-  const sale = await response.json();
+  assert.equal(response.status, 400);
+  const successful = await request('/api/sales', ownerToken, json('POST', { items: [{ medicine_id: medicineId, quantity: 10 }] }));
+  assert.equal(successful.status, 201);
+  const sale = await successful.json();
   saleId = sale.saleId;
-  assert.equal(sale.items.reduce((sum, item) => sum + item.quantity, 0), 11);
+  assert.equal(sale.items.reduce((sum, item) => sum + item.quantity, 0), 10);
   const validStock = db.prepare('SELECT qty FROM batches WHERE id = ?').get(batchId).qty;
   assert.equal(validStock, 0);
   const expired = db.prepare("SELECT qty FROM batches WHERE batch_no = 'TEST-EXPIRED-01'").get().qty;
