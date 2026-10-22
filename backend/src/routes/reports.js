@@ -19,12 +19,21 @@ router.get('/summary', (req, res) => {
   const daysRaw = Number.parseInt(req.query.days, 10);
   const days = Number.isFinite(daysRaw) ? Math.min(366, Math.max(1, daysRaw)) : 30;
   const sales = db.prepare(`
-    SELECT COUNT(*) AS invoices, COALESCE(SUM(total_amount), 0) AS gross_revenue
+    SELECT COUNT(*) AS invoices, COALESCE(SUM(subtotal), 0) AS gross_revenue
     FROM sales WHERE created_at >= datetime('now', '-' || ? || ' days')
   `).get(days);
   const returns = db.prepare(`
-    SELECT COALESCE(SUM(refund_amount), 0) AS refunds
-    FROM sale_returns WHERE status = 'approved' AND created_at >= datetime('now', '-' || ? || ' days')
+    WITH approved AS (
+      SELECT id, refund_amount FROM sale_returns
+      WHERE status = 'approved' AND created_at >= datetime('now', '-' || ? || ' days')
+    ), return_lines AS (
+      SELECT ri.return_id, SUM(ri.quantity * si.price_at_sale) AS subtotal_refund
+      FROM sale_return_items ri JOIN sale_items si ON si.id = ri.sale_item_id
+      GROUP BY ri.return_id
+    )
+    SELECT COALESCE(SUM(a.refund_amount), 0) AS refunds,
+      COALESCE(SUM(l.subtotal_refund), 0) AS refunds_ex_gst
+    FROM approved a LEFT JOIN return_lines l ON l.return_id = a.id
   `).get(days);
   const costs = db.prepare(`
     SELECT COALESCE(SUM(si.quantity * si.cost_price_at_sale), 0) AS cost_of_goods
@@ -36,12 +45,13 @@ router.get('/summary', (req, res) => {
       COALESCE(SUM(CASE WHEN date(expiry_date) < date('now') THEN qty ELSE 0 END), 0) AS expired_units
     FROM batches
   `).get();
-  const netRevenue = Math.round((sales.gross_revenue - returns.refunds + Number.EPSILON) * 100) / 100;
+  const netRevenue = Math.round((sales.gross_revenue - returns.refunds_ex_gst + Number.EPSILON) * 100) / 100;
   const grossProfitEstimate = Math.round((netRevenue - costs.cost_of_goods + Number.EPSILON) * 100) / 100;
   res.json({ period_days: days, invoices: sales.invoices, gross_revenue: sales.gross_revenue,
-    approved_refunds: returns.refunds, net_revenue: netRevenue, cost_of_goods_sold: costs.cost_of_goods,
+    approved_refunds: returns.refunds, approved_refunds_ex_gst: returns.refunds_ex_gst,
+    net_revenue: netRevenue, cost_of_goods_sold: costs.cost_of_goods,
     estimated_gross_profit: grossProfitEstimate, sellable_units: stock.sellable_units, expired_units: stock.expired_units,
-    note: 'Profit is an estimate based on captured unit costs and approved refunds; excludes operating expenses and tax adjustments.' });
+    note: 'Revenue and estimated gross profit exclude GST; approved_refunds is the recorded customer refund including tax. Profit excludes operating expenses and other accounting adjustments.' });
 });
 
 router.get('/sales.csv', (req, res) => {
