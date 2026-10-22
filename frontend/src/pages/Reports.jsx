@@ -8,6 +8,7 @@ export default function Reports() {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -18,6 +19,16 @@ export default function Reports() {
       .finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [days]);
+
+  const exportCsv = async (kind) => {
+    setExporting(true);
+    try {
+      const path = kind === 'sales' ? '/api/reports/sales.csv' : '/api/reports/inventory.csv';
+      const filename = kind === 'sales' ? 'sales-report.csv' : 'inventory-report.csv';
+      await reports.downloadCsv(path, filename);
+    } catch (err) { setError(err.message); }
+    finally { setExporting(false); }
+  };
 
   const metrics = data ? [
     ['Invoices', data.invoices],
@@ -42,8 +53,8 @@ export default function Reports() {
         </label>
       </div>
       <div style={{display:'flex',gap:12,flexWrap:'wrap',margin:'20px 0'}}>
-        <a className="btn-primary" href={reports.salesCsvUrl} style={{textDecoration:'none'}}>Export sales CSV</a>
-        <a className="btn-secondary" href={reports.inventoryCsvUrl} style={{textDecoration:'none'}}>Export inventory CSV</a>
+        <button className="btn-primary" onClick={() => exportCsv('sales')} disabled={exporting}>Export sales CSV</button>
+        <button className="btn-secondary" onClick={() => exportCsv('inventory')} disabled={exporting}>Export inventory CSV</button>
       </div>
       {loading && <p>Loading report…</p>}
       {error && <p role="alert" style={{color:'var(--color-danger, #b91c1c)'}}>{error}</p>}
