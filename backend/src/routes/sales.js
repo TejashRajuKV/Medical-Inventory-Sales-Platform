@@ -1,6 +1,7 @@
 import express from 'express';
 import { auth } from '../middleware/auth.js';
 import db from '../db/connection.js';
+import { auditLog } from '../utils/audit.js';
 
 const router = express.Router();
 router.use(auth);
@@ -166,6 +167,8 @@ router.post('/', (req, res) => {
           item.cost_price_at_sale
         );
       }
+
+      auditLog(req.user.id, 'sale.created', 'sale', saleResult.lastInsertRowid, { invoice_no: invoiceNo, total_amount: totalAmount });
 
       return {
         saleId: saleResult.lastInsertRowid,
