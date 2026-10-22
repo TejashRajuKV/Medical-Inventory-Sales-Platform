@@ -33,7 +33,7 @@ router.post('/', (req, res) => {
   }
 
   const insertSaleItem = db.prepare(
-    'INSERT INTO sale_items (sale_id, medicine_id, batch_id, quantity, price_at_sale) VALUES (?, ?, ?, ?, ?)'
+    'INSERT INTO sale_items (sale_id, medicine_id, batch_id, quantity, price_at_sale, cost_price_at_sale) VALUES (?, ?, ?, ?, ?, ?)'
   );
   const updateBatch = db.prepare(
     'UPDATE batches SET qty = qty - ? WHERE id = ? AND qty >= ?'
@@ -117,6 +117,7 @@ router.post('/', (req, res) => {
             batch_id: batch.id,
             quantity: draw,
             price_at_sale: med.price,
+            cost_price_at_sale: Number(batch.cost_price ?? med.cost_price ?? 0),
             name: med.name,
             brand: med.brand,
             gst_rate: med.gst_rate,
@@ -161,7 +162,8 @@ router.post('/', (req, res) => {
           item.medicine_id,
           item.batch_id,
           item.quantity,
-          item.price_at_sale
+          item.price_at_sale,
+          item.cost_price_at_sale
         );
       }
 
