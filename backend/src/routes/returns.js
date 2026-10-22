@@ -52,7 +52,7 @@ router.post('/', (req, res) => {
       const computed = [];
       for (const [saleItemId, quantity] of merged) {
         const sold = db.prepare(`
-          SELECT si.*, m.gst_rate FROM sale_items si
+          SELECT si.*, COALESCE(NULLIF(si.gst_rate_at_sale, 0), m.gst_rate) AS gst_rate FROM sale_items si
           JOIN medicines m ON m.id = si.medicine_id
           WHERE si.id = ? AND si.sale_id = ?
         `).get(saleItemId, Number(sale_id));
