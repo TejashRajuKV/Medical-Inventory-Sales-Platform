@@ -94,8 +94,23 @@ export const returnsApi = {
 
 export const reports = {
   summary: (days = 30) => request(`/reports/summary?days=${days}`),
-  salesCsvUrl: '/api/reports/sales.csv',
-  inventoryCsvUrl: '/api/reports/inventory.csv',
+  async downloadCsv(path, filename) {
+    const token = getToken();
+    const response = await fetch(path, { headers: token ? { Authorization: `Bearer ${token}` } : {} });
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({}));
+      throw new Error(body.error || 'Could not export report');
+    }
+    const blob = await response.blob();
+    const objectUrl = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = objectUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(objectUrl);
+  },
 };
 
 export const auditLogs = {
