@@ -39,3 +39,6 @@ const saleItemColumns = db.prepare('PRAGMA table_info(sale_items)').all().map((c
 if (!saleItemColumns.includes('cost_price_at_sale')) {
   db.exec('ALTER TABLE sale_items ADD COLUMN cost_price_at_sale REAL NOT NULL DEFAULT 0');
 }
+if (!saleItemColumns.includes('gst_rate_at_sale')) {
+  db.exec('ALTER TABLE sale_items ADD COLUMN gst_rate_at_sale REAL NOT NULL DEFAULT 0');
+}
