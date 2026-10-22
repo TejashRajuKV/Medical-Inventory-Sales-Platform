@@ -129,7 +129,7 @@ All routes below are prefixed with /api. Except login, endpoints require Authori
 
 ## Reports and profit calculation
 
-The summary endpoint returns invoice count, gross revenue, approved refunds, net revenue, captured cost of goods sold, estimated gross profit, sellable units, and expired units. The estimate excludes operating expenses and other accounting/tax adjustments. Historical rows created before cost snapshots were introduced may have a zero captured unit cost; treat those periods as incomplete until reconciled.
+The summary endpoint returns invoice count, gross revenue excluding GST, approved refunds (recorded including tax), net revenue excluding GST, captured cost of goods sold, estimated gross profit, sellable units, and expired units. Approved restocked returns reduce the estimated cost of goods. The estimate excludes operating expenses and other accounting adjustments. Historical rows created before cost snapshots were introduced may have a zero captured unit cost; treat those periods as incomplete until reconciled.
 
 CSV exports include sales invoice summaries and medicine stock/price snapshots. They are authenticated API downloads; use the Reports page while signed in.
 
