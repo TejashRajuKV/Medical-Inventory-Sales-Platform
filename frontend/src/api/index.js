@@ -81,3 +81,23 @@ export const reorders = {
   approve: (id) => request(`/reorders/${id}/approve`, { method: 'POST' }),
   reject: (id) => request(`/reorders/${id}/reject`, { method: 'POST' }),
 };
+
+
+export const returnsApi = {
+  list: () => request('/returns'),
+  get: (id) => request(`/returns/${id}`),
+  create: (data) => request('/returns', { method: 'POST', body: JSON.stringify(data) }),
+  review: (id, decision, restock = false) => request(`/returns/${id}/review`, {
+    method: 'POST', body: JSON.stringify({ decision, restock })
+  }),
+};
+
+export const reports = {
+  summary: (days = 30) => request(`/reports/summary?days=${days}`),
+  salesCsvUrl: '/api/reports/sales.csv',
+  inventoryCsvUrl: '/api/reports/inventory.csv',
+};
+
+export const auditLogs = {
+  list: (limit = 50) => request(`/audit-logs?limit=${limit}`),
+};
