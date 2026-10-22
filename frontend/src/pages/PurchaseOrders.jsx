@@ -32,6 +32,14 @@ export default function PurchaseOrders() {
     finally { setBusy(false); }
   };
 
+  const cancelOrder = async (id) => {
+    if (!confirm('Cancel this purchase order?')) return;
+    setBusy(true); setError(''); setNotice('');
+    try { await purchaseOrders.cancel(id); setNotice('Purchase order cancelled.'); await load(); }
+    catch (e) { setError(e.message); }
+    finally { setBusy(false); }
+  };
+
   const receiveOrder = async (event) => {
     event.preventDefault(); setBusy(true); setError(''); setNotice('');
     try {
@@ -67,7 +75,7 @@ export default function PurchaseOrders() {
           {orders.map((order) => <tr key={order.id}>
             <td className="med-name">PO-{order.id}</td><td>{order.supplier_name || 'Unknown supplier'}</td>
             <td>{order.status}</td><td>{order.ordered_at}</td><td>{order.batch_count}</td>
-            <td>{order.status === 'ordered' ? <button className="btn-sm" onClick={() => { setReceivingId(order.id); setError(''); setNotice(''); }}>Receive delivery</button> : '—'}</td>
+            <td>{order.status === 'ordered' ? <div style={{display:'flex',gap:6}}><button className="btn-sm" onClick={() => { setReceivingId(order.id); setError(''); setNotice(''); }}>Receive delivery</button><button className="btn-sm btn-sm-danger" disabled={busy} onClick={() => cancelOrder(order.id)}>Cancel</button></div> : '—'}</td>
           </tr>)}
           {orders.length === 0 && <tr><td colSpan="6">No purchase orders yet.</td></tr>}
         </tbody>
