@@ -13,6 +13,7 @@ const navItems = [
   { to: '/sales-history', label: 'Sales History', icon: '≡' },
   { to: '/alerts', label: 'Alerts', icon: '!' },
   { to: '/reports', label: 'Reports', icon: '%' },
+  { to: '/audit-logs', label: 'Audit History', icon: '⌕', ownerOnly: true },
 ];
 
 export default function Sidebar() {
@@ -24,7 +25,7 @@ export default function Sidebar() {
         <span className="sidebar-title">PharmaStock</span>
       </div>
       <nav className="sidebar-nav">
-        {navItems.map((item) => (
+        {navItems.filter((item) => !item.ownerOnly || user?.role === 'owner').map((item) => (
           <NavLink key={item.to} to={item.to} end={item.to === '/'} className={({ isActive }) => `sidebar-link ${isActive ? 'active' : ''}`}>
             <span className="sidebar-icon">{item.icon}</span>{item.label}
           </NavLink>
