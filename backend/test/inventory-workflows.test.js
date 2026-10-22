@@ -109,6 +109,26 @@ test('return requests reject quantities above sold quantity', async () => {
   assert.equal(response.status, 400);
 });
 
+
+test('owner can approve a valid return and explicitly restock its original unexpired batch', async () => {
+  const saleItem = db.prepare('SELECT id FROM sale_items WHERE sale_id = ? LIMIT 1').get(saleId);
+  const created = await request('/api/returns', ownerToken, json('POST', {
+    sale_id: saleId, reason: 'sealed pack returned', items: [{ sale_item_id: saleItem.id, quantity: 2 }]
+  }));
+  assert.equal(created.status, 201);
+  const result = await created.json();
+  const reviewed = await request(`/api/returns/${result.id}/review`, ownerToken, json('POST', { decision: 'approve', restock: true }));
+  assert.equal(reviewed.status, 200);
+  assert.equal(db.prepare('SELECT qty FROM batches WHERE id = ?').get(batchId).qty, 2);
+  assert.equal(db.prepare('SELECT status, restock_approved FROM sale_returns WHERE id = ?').get(result.id).restock_approved, 1);
+});
+
+test('supplier deletion is blocked when linked to medicines or purchase orders', async () => {
+  const supplierId = db.prepare('SELECT supplier_id FROM medicines WHERE id = ?').get(medicineId).supplier_id;
+  const response = await request(`/api/suppliers/${supplierId}`, ownerToken, { method: 'DELETE' });
+  assert.equal(response.status, 409);
+});
+
 test('staff cannot access owner-only audit history or approve refunds', async () => {
   const audit = await request('/api/audit-logs', staffToken);
   assert.equal(audit.status, 403);
