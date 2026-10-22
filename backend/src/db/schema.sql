@@ -104,7 +104,8 @@ CREATE TABLE IF NOT EXISTS sale_items (
     batch_id INTEGER REFERENCES batches(id),
     quantity INTEGER NOT NULL,
     price_at_sale REAL NOT NULL,
-    cost_price_at_sale REAL NOT NULL DEFAULT 0
+    cost_price_at_sale REAL NOT NULL DEFAULT 0,
+    gst_rate_at_sale REAL NOT NULL DEFAULT 0
 );
 
 -- Reorder requests
