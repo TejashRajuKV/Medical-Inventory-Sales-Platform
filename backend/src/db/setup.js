@@ -11,14 +11,15 @@ const schema = fs.readFileSync(path.join(__dirname, 'schema.sql'), 'utf-8');
 db.exec(schema);
 
 // Seed owner account
-const ownerExists = db.prepare('SELECT id FROM users WHERE email = ?').get('owner@pharma.com');
+const ownerEmail = (process.env.OWNER_EMAIL || 'owner@pharma.com').trim().toLowerCase();
+const ownerExists = db.prepare('SELECT id FROM users WHERE email = ?').get(ownerEmail);
 if (!ownerExists) {
   const initialPassword = process.env.OWNER_INITIAL_PASSWORD;
   if (typeof initialPassword !== 'string' || initialPassword.length < 12) throw new Error('Set OWNER_INITIAL_PASSWORD to a unique password of at least 12 characters before setup.');
   const hash = bcrypt.hashSync(initialPassword, 12);
   db.prepare('INSERT INTO users (name, email, password_hash, role) VALUES (?, ?, ?, ?)')
-    .run('Pharmacy Owner', 'owner@pharma.com', hash, 'owner');
-  console.log('Owner account created: owner@pharma.com (password supplied via environment).');
+    .run('Pharmacy Owner', ownerEmail, hash, 'owner');
+  console.log('Owner account created:', ownerEmail, '(password supplied via environment).');
 }
 
 // Seed sample suppliers
