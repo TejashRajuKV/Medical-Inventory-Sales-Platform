@@ -40,7 +40,7 @@ router.get('/summary', (req, res) => {
       COALESCE((SELECT SUM(si.quantity * si.cost_price_at_sale) FROM sale_items si JOIN sales s ON s.id = si.sale_id WHERE s.created_at >= datetime('now', '-' || ? || ' days')), 0)
       - COALESCE((SELECT SUM(ri.quantity * si.cost_price_at_sale) FROM sale_returns r JOIN sale_return_items ri ON ri.return_id = r.id JOIN sale_items si ON si.id = ri.sale_item_id WHERE r.status = 'approved' AND r.restock_approved = 1 AND r.created_at >= datetime('now', '-' || ? || ' days')), 0)
       AS cost_of_goods
-  `).get(days);
+  `).get(days, days);
   const stock = db.prepare(`
     SELECT COALESCE(SUM(CASE WHEN date(expiry_date) >= date('now') THEN qty ELSE 0 END), 0) AS sellable_units,
       COALESCE(SUM(CASE WHEN date(expiry_date) < date('now') THEN qty ELSE 0 END), 0) AS expired_units
