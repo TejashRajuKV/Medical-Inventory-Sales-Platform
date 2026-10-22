@@ -84,7 +84,7 @@ router.delete('/:id', requireRole('owner', 'manager'), (req, res) => {
   if (!Number.isSafeInteger(medicineId) || medicineId <= 0) return res.status(400).json({ error: 'Invalid medicine ID' });
   const exists = db.prepare('SELECT id FROM medicines WHERE id = ?').get(medicineId);
   if (!exists) return res.status(404).json({ error: 'Medicine not found' });
-  const history = db.prepare('SELECT (SELECT COUNT(*) FROM sale_items WHERE medicine_id = ?) + (SELECT COUNT(*) FROM batches WHERE medicine_id = ?) AS total').get(medicineId, medicineId).total;
+  const history = db.prepare('SELECT (SELECT COUNT(*) FROM sale_items WHERE medicine_id = ?) + (SELECT COUNT(*) FROM batches WHERE medicine_id = ?) + (SELECT COUNT(*) FROM reorder_requests WHERE medicine_id = ?) + (SELECT COUNT(*) FROM alerts WHERE medicine_id = ?) AS total').get(medicineId, medicineId, medicineId, medicineId).total;
   if (history > 0) return res.status(409).json({ error: 'Cannot delete a medicine with batch or sales history' });
   db.prepare('DELETE FROM medicines WHERE id = ?').run(medicineId);
   auditLog(req.user.id, 'medicine.deleted', 'medicine', medicineId);
