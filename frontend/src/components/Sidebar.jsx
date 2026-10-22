@@ -7,7 +7,7 @@ const navItems = [
   { to: '/billing', label: 'Billing', icon: '₹' },
   { to: '/medicines', label: 'Medicines', icon: '●' },
   { to: '/suppliers', label: 'Suppliers', icon: '◆' },
-  { to: '/reorders', label: 'Reorder AI', icon: '↗' },
+  { to: '/reorders', label: 'Reorder Suggestions', icon: '↗' },
   { to: '/sales-history', label: 'Sales History', icon: '≡' },
   { to: '/alerts', label: 'Alerts', icon: '!' },
   { to: '/reports', label: 'Reports', icon: '%' },
