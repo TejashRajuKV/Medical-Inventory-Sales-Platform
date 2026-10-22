@@ -14,7 +14,7 @@ router.get('/', (req, res) => {
 
 router.post('/', (req, res) => {
   const { name, email, password, role = 'staff' } = req.body;
-  if (typeof name !== 'string' || !name.trim() || name.trim().length > 150 || typeof email !== 'string' || !/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email) || typeof password !== 'string' || password.length < 10 || !['owner', 'staff', 'manager'].includes(role)) {
+  if (typeof name !== 'string' || !name.trim() || name.trim().length > 150 || typeof email !== 'string' || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || typeof password !== 'string' || password.length < 10 || !['owner', 'staff', 'manager'].includes(role)) {
     return res.status(400).json({ error: 'Valid name/email, password of at least 10 characters, and an allowed role are required' });
   }
   const exists = db.prepare('SELECT id FROM users WHERE email = ?').get(email);
