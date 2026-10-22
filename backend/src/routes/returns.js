@@ -37,8 +37,8 @@ router.get('/:id', (req, res) => {
 
 router.post('/', (req, res) => {
   const { sale_id, reason, items } = req.body ?? {};
-  if (!positiveInt(sale_id) || typeof reason !== 'string' || !reason.trim() ||
-      !Array.isArray(items) || items.length === 0 ||
+  if (!positiveInt(sale_id) || typeof reason !== 'string' || !reason.trim() || reason.trim().length > 500 ||
+      !Array.isArray(items) || items.length === 0 || items.length > 100 ||
       items.some((i) => !i || !positiveInt(i.sale_item_id) || !positiveInt(i.quantity))) {
     return res.status(400).json({ error: 'sale_id, reason and valid return items are required' });
   }
