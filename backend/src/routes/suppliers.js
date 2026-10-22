@@ -1,5 +1,5 @@
 import express from 'express';
-import { auth, ownerOnly } from '../middleware/auth.js';
+import { auth, ownerOnly, requireRole } from '../middleware/auth.js';
 import db from '../db/connection.js';
 import { auditLog } from '../utils/audit.js';
 
@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
   res.json(db.prepare('SELECT * FROM suppliers ORDER BY name').all());
 });
 
-router.post('/', (req, res) => {
+router.post('/', requireRole('owner', 'manager'), (req, res) => {
   const { name, contact_info } = req.body;
   if (typeof name !== 'string' || !name.trim() || name.trim().length > 150 || (contact_info != null && (typeof contact_info !== 'string' || contact_info.length > 500))) return res.status(400).json({ error: 'Valid supplier name and contact details are required' });
   const r = db.prepare('INSERT INTO suppliers (name, contact_info) VALUES (?, ?)').run(name.trim(), contact_info?.trim() || null);
@@ -18,7 +18,7 @@ router.post('/', (req, res) => {
   res.status(201).json({ id: r.lastInsertRowid, name: name.trim() });
 });
 
-router.put('/:id', (req, res) => {
+router.put('/:id', requireRole('owner', 'manager'), (req, res) => {
   const { name, contact_info } = req.body;
   if (!Number.isSafeInteger(Number(req.params.id)) || Number(req.params.id) <= 0 || typeof name !== 'string' || !name.trim() || name.trim().length > 150 || (contact_info != null && (typeof contact_info !== 'string' || contact_info.length > 500))) return res.status(400).json({ error: 'Valid supplier ID, name and contact details are required' });
   const result = db.prepare('UPDATE suppliers SET name = ?, contact_info = ? WHERE id = ?').run(name.trim(), contact_info?.trim() || null, Number(req.params.id));
