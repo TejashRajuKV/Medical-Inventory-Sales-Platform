@@ -1,6 +1,7 @@
 import express from 'express';
-import { auth } from '../middleware/auth.js';
+import { auth, requireRole } from '../middleware/auth.js';
 import db from '../db/connection.js';
+import { auditLog } from '../utils/audit.js';
 
 const router = express.Router();
 router.use(auth);
@@ -131,7 +132,8 @@ router.get('/', (req, res) => {
 // Create reorder request from a suggestion
 router.post('/', (req, res) => {
   const { medicine_id, suggested_qty, reason } = req.body;
-  if (!medicine_id) return res.status(400).json({ error: 'Medicine ID required' });
+  if (!Number.isSafeInteger(Number(medicine_id)) || Number(medicine_id) <= 0 || !Number.isSafeInteger(Number(suggested_qty)) || Number(suggested_qty) <= 0) return res.status(400).json({ error: 'Valid medicine_id and positive whole-number suggested_qty are required' });
+  if (!db.prepare('SELECT id FROM medicines WHERE id = ?').get(Number(medicine_id))) return res.status(404).json({ error: 'Medicine not found' });
 
   // Check for existing pending request
   const existing = db.prepare(
@@ -141,19 +143,21 @@ router.post('/', (req, res) => {
 
   const r = db.prepare(
     'INSERT INTO reorder_requests (medicine_id, suggested_qty) VALUES (?, ?)'
-  ).run(medicine_id, suggested_qty || 0);
+  ).run(Number(medicine_id), Number(suggested_qty));
+  auditLog(req.user.id, 'reorder.requested', 'reorder_request', r.lastInsertRowid, { medicine_id: Number(medicine_id), suggested_qty: Number(suggested_qty) });
   res.status(201).json({ id: r.lastInsertRowid });
 });
 
 // Approve — creates a purchase order
-router.post('/:id/approve', (req, res) => {
+router.post('/:id/approve', requireRole('owner', 'manager'), (req, res) => {
+  if (!Number.isSafeInteger(Number(req.params.id)) || Number(req.params.id) <= 0) return res.status(400).json({ error: 'Invalid reorder request ID' });
   const rr = db.prepare('SELECT * FROM reorder_requests WHERE id = ?').get(req.params.id);
   if (!rr) return res.status(404).json({ error: 'Not found' });
   if (rr.status !== 'pending') return res.status(400).json({ error: `Already ${rr.status}` });
 
   const med = db.prepare('SELECT supplier_id FROM medicines WHERE id = ?').get(rr.medicine_id);
   const supplierId = med?.supplier_id || req.body.supplier_id;
-  if (!supplierId) return res.status(400).json({ error: 'No supplier assigned — set one on the medicine first' });
+  if (!Number.isSafeInteger(Number(supplierId)) || Number(supplierId) <= 0 || !db.prepare('SELECT id FROM suppliers WHERE id = ?').get(Number(supplierId))) return res.status(400).json({ error: 'A valid supplier must be assigned to the medicine or provided in the request' });
 
   db.transaction(() => {
  const po = db.prepare('INSERT INTO purchase_orders (supplier_id, reorder_request_id) VALUES (?, ?)')
@@ -162,13 +166,19 @@ router.post('/:id/approve', (req, res) => {
       .run(req.user.id, req.params.id);
   })();
 
+  auditLog(req.user.id, 'reorder.approved', 'reorder_request', req.params.id, { supplier_id: Number(supplierId) });
   res.json({ success: true, message: 'Purchase order created' });
 });
 
 // Reject
-router.post('/:id/reject', (req, res) => {
+router.post('/:id/reject', requireRole('owner', 'manager'), (req, res) => {
+  if (!Number.isSafeInteger(Number(req.params.id)) || Number(req.params.id) <= 0) return res.status(400).json({ error: 'Invalid reorder request ID' });
+  const row = db.prepare('SELECT status FROM reorder_requests WHERE id = ?').get(Number(req.params.id));
+  if (!row) return res.status(404).json({ error: 'Reorder request not found' });
+  if (row.status !== 'pending') return res.status(409).json({ error: 'Only pending requests can be rejected' });
   db.prepare("UPDATE reorder_requests SET status = 'rejected', reviewed_by = ? WHERE id = ?")
-    .run(req.user.id, req.params.id);
+    .run(req.user.id, Number(req.params.id));
+  auditLog(req.user.id, 'reorder.rejected', 'reorder_request', req.params.id);
   res.json({ success: true });
 });
 
