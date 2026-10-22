@@ -103,7 +103,8 @@ CREATE TABLE IF NOT EXISTS sale_items (
     medicine_id INTEGER REFERENCES medicines(id),
     batch_id INTEGER REFERENCES batches(id),
     quantity INTEGER NOT NULL,
-    price_at_sale REAL NOT NULL
+    price_at_sale REAL NOT NULL,
+    cost_price_at_sale REAL NOT NULL DEFAULT 0
 );
 
 -- Reorder requests
