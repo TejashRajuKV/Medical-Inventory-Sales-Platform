@@ -38,7 +38,7 @@ router.post('/', (req, res) => {
 router.post('/:id/receive', (req, res) => {
   const { batches: batchItems } = req.body; // [{ medicine_id, batch_no, expiry_date, qty, cost_price }]
   if (!Array.isArray(batchItems) || batchItems.length === 0 || batchItems.length > 200) return res.status(400).json({ error: 'Provide between 1 and 200 batch items' });
-  if (batchItems.some((b) => !b || !Number.isSafeInteger(Number(b.medicine_id)) || Number(b.medicine_id) <= 0 || typeof b.batch_no !== 'string' || !b.batch_no.trim() || b.batch_no.trim().length > 100 || typeof b.expiry_date !== 'string' || !/^\\d{4}-\\d{2}-\\d{2}$/.test(b.expiry_date) || Number.isSafeInteger(b.qty) === false || b.qty <= 0 || !Number.isFinite(Number(b.cost_price)) || Number(b.cost_price) < 0)) return res.status(400).json({ error: 'Each batch needs a valid medicine, batch number, YYYY-MM-DD expiry, positive integer quantity and non-negative cost price' });
+  if (batchItems.some((b) => !b || !Number.isSafeInteger(Number(b.medicine_id)) || Number(b.medicine_id) <= 0 || typeof b.batch_no !== 'string' || !b.batch_no.trim() || b.batch_no.trim().length > 100 || typeof b.expiry_date !== 'string' || !/^\d{4}-\d{2}-\d{2}$/.test(b.expiry_date) || Number.isSafeInteger(b.qty) === false || b.qty <= 0 || !Number.isFinite(Number(b.cost_price)) || Number(b.cost_price) < 0)) return res.status(400).json({ error: 'Each batch needs a valid medicine, batch number, YYYY-MM-DD expiry, positive integer quantity and non-negative cost price' });
 
   try {
     const result = db.transaction(() => {
