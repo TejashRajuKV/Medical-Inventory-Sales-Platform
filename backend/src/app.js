@@ -42,8 +42,12 @@ process.on('unhandledRejection', (err) => { console.error('UNHANDLED:', err); })
 
 import { startAlertService } from './services/alertService.js';
 
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-  startAlertService();
-});
+export default app;
+
+if (process.env.NODE_ENV !== 'test') {
+  const PORT = process.env.PORT || 4000;
+  app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+    startAlertService();
+  });
+}
